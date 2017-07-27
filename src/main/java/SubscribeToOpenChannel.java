@@ -16,10 +16,12 @@ public class SubscribeToOpenChannel {
     static BlockingQueue<snapshot> buffer2 = new LinkedBlockingQueue<snapshot>();
     static Map<String, Integer> DevsMap = new HashMap<String, Integer>();
     static Map<String, Integer> RepMap = new HashMap<String, Integer>();
-    static JsonToSnapshot a = new JsonToSnapshot("1");
-    static SnapshotToP b = new SnapshotToP("2");
+    static JsonToSnapshot a = new JsonToSnapshot("thread 1");
+    static SnapshotToP b = new SnapshotToP("thread 2");
 
     public static void main(String[] args) throws InterruptedException {
+        Scanner scanner=new Scanner(System.in);
+        final int mytime=scanner.nextInt();
         final RtmClient client = new RtmClientBuilder(endpoint, appkey)
                 .setListener(new RtmClientAdapter() {
                     @Override
@@ -37,21 +39,65 @@ public class SubscribeToOpenChannel {
                     buffer1.add(json);
                     //System.out.println(json.toString());
                 }
-                if (System.currentTimeMillis() - firstT > 20000) {
+                if (System.currentTimeMillis() - firstT > mytime*60*1000) {
                     client.shutdown();
                     while (buffer1.size() != 0 || buffer2.size() != 0) {
 
                     }
-                    int max = 0;
+                    int max[] = {0,0,0,0,0,0,0,0,0,0,0};
+                    String mid[]={"","","","","","","","","","",""};
                     myflag = false;
-                    System.out.println(DevsMap.size());
+                    System.out.println("in "+DevsMap.size()+" Devlopers :");
                     for (String id : DevsMap.keySet()) {
                         int a = DevsMap.get(id);
-                        if (max < a) {
-                            max = a;
+                        max[10]=a;
+                        mid[10]=id;
+                        for(int i=0;i<11;i++) {
+                            for(int j=0;j<10-i;j++)
+                            {
+                                if(max[j]<max[j+1])
+                                {
+                                    int tm=max[j];
+                                    max[j]=max[j+1];
+                                    max[j+1]=tm;
+                                    String tm2=mid[j];
+                                    mid[j]=mid[j+1];
+                                    mid[j+1]=tm2;
+                                }
+                            }
                         }
                     }
-                    System.out.println(max);
+                    for(int i=0;i<10;i++)
+                    {
+                        System.out.println("id:"+mid[i]+" "+max[i]);
+                    }
+                    int max2[] = {0,0,0,0,0,0,0,0,0,0,0};
+                    String mid2[]={"","","","","","","","","","",""};
+                    System.out.println("in "+RepMap.size()+" Repositories :");
+                    for (String id : RepMap.keySet()) {
+                        int a = RepMap.get(id);
+                        max2[10]=a;
+                        mid2[10]=id;
+                        for(int i=0;i<11;i++) {
+                            for(int j=0;j<10-i;j++)
+                            {
+                                if(max2[j]<max2[j+1])
+                                {
+                                    int tm=max2[j];
+                                    max2[j]=max2[j+1];
+                                    max2[j+1]=tm;
+                                    String tm2=mid2[j];
+                                    mid2[j]=mid2[j+1];
+                                    mid2[j+1]=tm2;
+                                }
+                            }
+                        }
+                    }
+                    for(int i=0;i<10;i++)
+                    {
+                        System.out.println("id:"+mid2[i]+" "+max2[i]);
+                    }
+
                 }
             }
         };
@@ -77,13 +123,13 @@ public class SubscribeToOpenChannel {
                     AnyJson tmp = buffer1.take();
                     snapshot tmp2 = tmp.convertToType(snapshot.class);
                     buffer2.put(tmp2);
-                    System.out.println("$");
+                    //System.out.println("$");
                 }
                 System.out.println(myflag + " " + buffer1.size());
             } catch (InterruptedException e) {
                 System.out.println("JsonToSnapshot Interrupted");
             }
-            System.out.println("Thread " + threadName + " exiting.");
+            System.out.println(threadName + " exiting.");
         }
 
         public Thread getT() {
@@ -126,13 +172,13 @@ public class SubscribeToOpenChannel {
                     } else {
                         RepMap.put(tmp.repo.id, 1);
                     }
-                    System.out.println("#");
+                    //System.out.println("#");
                 }
                 System.out.println("#" + myflag + " " + buffer2.size());
             } catch (InterruptedException e) {
                 System.out.println("Thread " + threadName + " interrupted.");
             }
-            System.out.println("Thread " + threadName + " exiting.");
+            System.out.println(threadName + " exiting.");
         }
 
         public Thread getT() {
