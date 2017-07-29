@@ -20,7 +20,8 @@ public class SubscribeToOpenChannel {
     static Map<String, Integer> RepMap = new HashMap<String, Integer>();
     static JsonToSnapshot a = new JsonToSnapshot("thread 1");
     static SnapshotToP b = new SnapshotToP("thread 2");
-
+    static int events1=0;
+    static int events2=0;
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner=new Scanner(System.in);
         final int mytime=scanner.nextInt();
@@ -39,6 +40,7 @@ public class SubscribeToOpenChannel {
                 //System.out.println(System.currentTimeMillis());
                 for (AnyJson json : data.getMessages()) {
                     buffer1.add(json);
+                    events1++;
                     //System.out.println(json.toString());
                 }
                 if (System.currentTimeMillis() - firstT > mytime*60*1000) {
@@ -49,6 +51,7 @@ public class SubscribeToOpenChannel {
                     int max[] = {0,0,0,0,0,0,0,0,0,0,0};
                     String mid[]={"","","","","","","","","","",""};
                     myflag = false;
+                    System.out.println("data lost:" +(events2-events1));
                     System.out.println("in "+DevsMap.size()+" Devlopers :");
                     for (String id : DevsMap.keySet()) {
                         int a = DevsMap.get(id);
@@ -71,7 +74,7 @@ public class SubscribeToOpenChannel {
                     }
                     try{
                         PrintWriter writer = new PrintWriter("Developers.txt", "UTF-8");
-                        writer.println("Developers");
+                        writer.println(DevsMap.size()+" Devlopers :");
                         for(int i=0;i<10;i++)
                         {
                             writer.println("id: "+mid[i]+" events: "+max[i]);
@@ -106,7 +109,7 @@ public class SubscribeToOpenChannel {
                     }
                     try{
                         PrintWriter writer = new PrintWriter("Repositories.txt", "UTF-8");
-                        writer.println("Repository");
+                        writer.println(RepMap.size()+" Repositories :");
                         for(int i=0;i<10;i++)
                         {
                             writer.println("id: "+mid2[i]+" events: "+max2[i]);
@@ -182,6 +185,7 @@ public class SubscribeToOpenChannel {
                     if(buffer2.isEmpty())
                         continue;
                     snapshot tmp = buffer2.take();
+                    events2++;
                     if (DevsMap.containsKey(tmp.actor.id)) {
                         int val = DevsMap.get(tmp.actor.id) + 1;
                         DevsMap.put(tmp.actor.id, val);
