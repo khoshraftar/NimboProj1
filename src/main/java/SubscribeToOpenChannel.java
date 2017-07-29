@@ -2,6 +2,8 @@ import com.satori.rtm.*;
 import com.satori.rtm.model.*;
 import com.sun.org.apache.xpath.internal.SourceTree;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -67,10 +69,19 @@ public class SubscribeToOpenChannel {
                             }
                         }
                     }
-                    for(int i=0;i<10;i++)
-                    {
-                        System.out.println("id:"+mid[i]+" "+max[i]);
+                    try{
+                        PrintWriter writer = new PrintWriter("Developers.txt", "UTF-8");
+                        writer.println("Developers");
+                        for(int i=0;i<10;i++)
+                        {
+                            writer.println("id: "+mid[i]+" events: "+max[i]);
+                            System.out.println("id: "+mid[i]+" events: "+max[i]);
+                        }
+                        writer.close();
+                    } catch (IOException e) {
+                        System.out.println("can not open or write file!");
                     }
+
                     int max2[] = {0,0,0,0,0,0,0,0,0,0,0};
                     String mid2[]={"","","","","","","","","","",""};
                     System.out.println("in "+RepMap.size()+" Repositories :");
@@ -93,10 +104,19 @@ public class SubscribeToOpenChannel {
                             }
                         }
                     }
-                    for(int i=0;i<10;i++)
-                    {
-                        System.out.println("id:"+mid2[i]+" "+max2[i]);
+                    try{
+                        PrintWriter writer = new PrintWriter("Repositories.txt", "UTF-8");
+                        writer.println("Repository");
+                        for(int i=0;i<10;i++)
+                        {
+                            writer.println("id: "+mid2[i]+" events: "+max2[i]);
+                            System.out.println("id: "+mid2[i]+" events: "+max2[i]);
+                        }
+                        writer.close();
+                    } catch (IOException e) {
+                        System.out.println("can not open or write file!");
                     }
+                    client.shutdown();
 
                 }
             }
@@ -119,13 +139,13 @@ public class SubscribeToOpenChannel {
         public void run() {
             System.out.println("Running " + threadName);
             try {
-                while (myflag || buffer1.size() != 0) {
+                while (myflag || !buffer1.isEmpty()) {
+                    if(buffer1.isEmpty())
+                        continue;;
                     AnyJson tmp = buffer1.take();
                     snapshot tmp2 = tmp.convertToType(snapshot.class);
                     buffer2.put(tmp2);
-                    //System.out.println("$");
                 }
-                System.out.println(myflag + " " + buffer1.size());
             } catch (InterruptedException e) {
                 System.out.println("JsonToSnapshot Interrupted");
             }
@@ -158,7 +178,9 @@ public class SubscribeToOpenChannel {
         public void run() {
             System.out.println("Running " + threadName);
             try {
-                while (myflag || buffer2.size() != 0) {
+                while (myflag || !buffer2.isEmpty()) {
+                    if(buffer2.isEmpty())
+                        continue;
                     snapshot tmp = buffer2.take();
                     if (DevsMap.containsKey(tmp.actor.id)) {
                         int val = DevsMap.get(tmp.actor.id) + 1;
@@ -172,9 +194,7 @@ public class SubscribeToOpenChannel {
                     } else {
                         RepMap.put(tmp.repo.id, 1);
                     }
-                    //System.out.println("#");
                 }
-                System.out.println("#" + myflag + " " + buffer2.size());
             } catch (InterruptedException e) {
                 System.out.println("Thread " + threadName + " interrupted.");
             }
