@@ -24,7 +24,6 @@ public class SubscribeToOpenChannel {
     static int events2=0;
     public static void main(String[] args) throws InterruptedException {
         Scanner scanner=new Scanner(System.in);
-        final int mytime=scanner.nextInt();
         final RtmClient client = new RtmClientBuilder(endpoint, appkey)
                 .setListener(new RtmClientAdapter() {
                     @Override
@@ -43,91 +42,89 @@ public class SubscribeToOpenChannel {
                     events1++;
                     //System.out.println(json.toString());
                 }
-                if (System.currentTimeMillis() - firstT > mytime*60*1000) {
-                    client.shutdown();
-                    while (buffer1.size() != 0 || buffer2.size() != 0) {
-
-                    }
-                    int max[] = {0,0,0,0,0,0,0,0,0,0,0};
-                    String mid[]={"","","","","","","","","","",""};
-                    myflag = false;
-                    System.out.println("data lost:" +(events2-events1));
-                    System.out.println("in "+DevsMap.size()+" Devlopers :");
-                    for (String id : DevsMap.keySet()) {
-                        int a = DevsMap.get(id);
-                        max[10]=a;
-                        mid[10]=id;
-                        for(int i=0;i<11;i++) {
-                            for(int j=0;j<10-i;j++)
-                            {
-                                if(max[j]<max[j+1])
-                                {
-                                    int tm=max[j];
-                                    max[j]=max[j+1];
-                                    max[j+1]=tm;
-                                    String tm2=mid[j];
-                                    mid[j]=mid[j+1];
-                                    mid[j+1]=tm2;
-                                }
-                            }
-                        }
-                    }
-                    try{
-                        PrintWriter writer = new PrintWriter("Developers.txt", "UTF-8");
-                        writer.println(DevsMap.size()+" Devlopers :");
-                        for(int i=0;i<10;i++)
-                        {
-                            writer.println("id: "+mid[i]+" events: "+max[i]);
-                            System.out.println("id: "+mid[i]+" events: "+max[i]);
-                        }
-                        writer.close();
-                    } catch (IOException e) {
-                        System.out.println("can not open or write file!");
-                    }
-
-                    int max2[] = {0,0,0,0,0,0,0,0,0,0,0};
-                    String mid2[]={"","","","","","","","","","",""};
-                    System.out.println("in "+RepMap.size()+" Repositories :");
-                    for (String id : RepMap.keySet()) {
-                        int a = RepMap.get(id);
-                        max2[10]=a;
-                        mid2[10]=id;
-                        for(int i=0;i<11;i++) {
-                            for(int j=0;j<10-i;j++)
-                            {
-                                if(max2[j]<max2[j+1])
-                                {
-                                    int tm=max2[j];
-                                    max2[j]=max2[j+1];
-                                    max2[j+1]=tm;
-                                    String tm2=mid2[j];
-                                    mid2[j]=mid2[j+1];
-                                    mid2[j+1]=tm2;
-                                }
-                            }
-                        }
-                    }
-                    try{
-                        PrintWriter writer = new PrintWriter("Repositories.txt", "UTF-8");
-                        writer.println(RepMap.size()+" Repositories :");
-                        for(int i=0;i<10;i++)
-                        {
-                            writer.println("id: "+mid2[i]+" events: "+max2[i]);
-                            System.out.println("id: "+mid2[i]+" events: "+max2[i]);
-                        }
-                        writer.close();
-                    } catch (IOException e) {
-                        System.out.println("can not open or write file!");
-                    }
-                    client.shutdown();
-
-                }
             }
         };
+        int tmp=0;
         client.createSubscription(channel, SubscriptionMode.SIMPLE, listener);
         client.start();
         a.start();
         b.start();
+        while (true) {
+            myflag=false;
+            final int mytime=scanner.nextInt();
+            myflag=true;
+            int max[] = {0,0,0,0,0,0,0,0,0,0,0};
+            String mid[]={"","","","","","","","","","",""};
+            System.out.println("Numbers Of Events:" +(events1));
+            System.out.println("in "+DevsMap.size()+" Devlopers :");
+            for (String id : DevsMap.keySet()) {
+                int a = DevsMap.get(id);
+                max[10]=a;
+                mid[10]=id;
+                for(int i=0;i<11;i++) {
+                    for(int j=0;j<10-i;j++)
+                    {
+                        if(max[j]<max[j+1])
+                        {
+                            int tm=max[j];
+                            max[j]=max[j+1];
+                            max[j+1]=tm;
+                            String tm2=mid[j];
+                            mid[j]=mid[j+1];
+                            mid[j+1]=tm2;
+                        }
+                    }
+                }
+            }
+            try{
+                PrintWriter writer = new PrintWriter(String.format("Devs%d.txt",tmp ), "UTF-8");
+                writer.println(DevsMap.size()+" Devlopers :");
+                for(int i=0;i<10;i++)
+                {
+                    writer.println("id: "+mid[i]+" events: "+max[i]);
+                    System.out.println("id: "+mid[i]+" events: "+max[i]);
+                }
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("can not open or write file!");
+            }
+
+            int max2[] = {0,0,0,0,0,0,0,0,0,0,0};
+            String mid2[]={"","","","","","","","","","",""};
+            System.out.println("in "+RepMap.size()+" Repositories :");
+            for (String id : RepMap.keySet()) {
+                int a = RepMap.get(id);
+                max2[10]=a;
+                mid2[10]=id;
+                for(int i=0;i<11;i++) {
+                    for(int j=0;j<10-i;j++)
+                    {
+                        if(max2[j]<max2[j+1])
+                        {
+                            int tm=max2[j];
+                            max2[j]=max2[j+1];
+                            max2[j+1]=tm;
+                            String tm2=mid2[j];
+                            mid2[j]=mid2[j+1];
+                            mid2[j+1]=tm2;
+                        }
+                    }
+                }
+            }
+            try{
+                PrintWriter writer = new PrintWriter(String.format("Reps%d.txt",tmp ), "UTF-8");
+                writer.println(RepMap.size()+" Repositories :");
+                for(int i=0;i<10;i++)
+                {
+                    writer.println("id: "+mid2[i]+" events: "+max2[i]);
+                    System.out.println("id: "+mid2[i]+" events: "+max2[i]);
+                }
+                writer.close();
+            } catch (IOException e) {
+                System.out.println("can not open or write file!");
+            }
+            tmp++;
+        }
     }
 
     static class JsonToSnapshot implements Runnable {
@@ -142,7 +139,7 @@ public class SubscribeToOpenChannel {
         public void run() {
             System.out.println("Running " + threadName);
             try {
-                while (myflag || !buffer1.isEmpty()) {
+                while (true) {
                     if(buffer1.isEmpty())
                         continue;;
                     AnyJson tmp = buffer1.take();
@@ -181,8 +178,8 @@ public class SubscribeToOpenChannel {
         public void run() {
             System.out.println("Running " + threadName);
             try {
-                while (myflag || !buffer2.isEmpty()) {
-                    if(buffer2.isEmpty())
+                while (true) {
+                    if(buffer2.isEmpty() ||myflag)
                         continue;
                     snapshot tmp = buffer2.take();
                     events2++;
