@@ -51,12 +51,13 @@ public class SubscribeToOpenChannel {
         b.start();
         while (true) {
             myflag=false;
-            final int mytime=scanner.nextInt();
+            scanner.next();
+            int time=(int)((System.currentTimeMillis()-firstT)/1000) ;
             myflag=true;
             int max[] = {0,0,0,0,0,0,0,0,0,0,0};
             String mid[]={"","","","","","","","","","",""};
-            System.out.println("Numbers Of Events:" +(events1));
-            System.out.println("in "+DevsMap.size()+" Devlopers :");
+            System.out.println("Numbers Of Events:" +(events1)+'\n');
+            System.out.println("\n in "+DevsMap.size()+" Devlopers :\n");
             for (String id : DevsMap.keySet()) {
                 int a = DevsMap.get(id);
                 max[10]=a;
@@ -77,8 +78,8 @@ public class SubscribeToOpenChannel {
                 }
             }
             try{
-                PrintWriter writer = new PrintWriter(String.format("Devs%d.txt",tmp ), "UTF-8");
-                writer.println(DevsMap.size()+" Devlopers :");
+                PrintWriter writer = new PrintWriter(String.format("Devs %d.txt",time ), "UTF-8");
+                writer.println(DevsMap.size()+" Devlopers :\n");
                 for(int i=0;i<10;i++)
                 {
                     writer.println("id: "+mid[i]+" events: "+max[i]);
@@ -91,7 +92,7 @@ public class SubscribeToOpenChannel {
 
             int max2[] = {0,0,0,0,0,0,0,0,0,0,0};
             String mid2[]={"","","","","","","","","","",""};
-            System.out.println("in "+RepMap.size()+" Repositories :");
+            System.out.println("\nin "+RepMap.size()+" Repositories :\n");
             for (String id : RepMap.keySet()) {
                 int a = RepMap.get(id);
                 max2[10]=a;
@@ -112,8 +113,8 @@ public class SubscribeToOpenChannel {
                 }
             }
             try{
-                PrintWriter writer = new PrintWriter(String.format("Reps%d.txt",tmp ), "UTF-8");
-                writer.println(RepMap.size()+" Repositories :");
+                PrintWriter writer = new PrintWriter(String.format("Reps%d.txt",time ), "UTF-8");
+                writer.println("\n"+RepMap.size()+" Repositories :\n");
                 for(int i=0;i<10;i++)
                 {
                     writer.println("id: "+mid2[i]+" events: "+max2[i]);
